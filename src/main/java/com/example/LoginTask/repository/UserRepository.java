@@ -11,5 +11,4 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User,Integer> {
     @Query("select en from User en where  en.name = :name")
     List<User> getUserByName(String name);
-
 }
