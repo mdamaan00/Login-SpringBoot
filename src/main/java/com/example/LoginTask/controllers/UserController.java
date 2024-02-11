@@ -5,6 +5,7 @@ import com.example.LoginTask.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,12 @@ public class UserController {
     public List<User> getAllUsers(){
         return userService.getAllUsers();
     }
+
+    @GetMapping("/users/{id}")
+    public User getUser(@PathVariable("id") Integer id){
+        return userService.getUser(id);
+    }
+
     @PutMapping("/login")
     public User loginUser(@RequestBody User user){
         return userService.loginUser(user);
