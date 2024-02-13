@@ -25,7 +25,7 @@ public class UserService {
         if(userData==null) {
             throw new RuntimeException("No user data found");
         }
-        if(!userData.getPassword().equals(user.getPassword())){
+        if(!passwordEncoder.matches(user.getPassword(), userData.getPassword())){
             throw new RuntimeException("Incorrect Password");
         }
         return userData;
