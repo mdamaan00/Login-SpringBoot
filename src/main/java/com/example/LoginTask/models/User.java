@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class User {
     private String name;
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-   private int id;
-   private String address;
-     private String city;
-     private String password;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+    private String address;
+    private String city;
+    private String password;
 }
