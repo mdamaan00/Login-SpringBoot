@@ -45,7 +45,7 @@ public class UserService {
     public User registerUser(User user) {
         User userData=getUserByName(user.getName());
         if(userData != null){
-            if(userData.getPassword().equals(user.getPassword())) {
+            if(passwordEncoder.matches(user.getPassword(),userData.getPassword())) {
                 user.setId(userData.getId());
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
                 return userRepository.save(user);
@@ -54,6 +54,7 @@ public class UserService {
                 throw new RuntimeException("This user already exists but password is incorrect");
             }
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
     public User getUser(Integer id){
