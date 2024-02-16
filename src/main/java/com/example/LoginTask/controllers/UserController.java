@@ -1,18 +1,15 @@
 package com.example.LoginTask.controllers;
 
 import com.example.LoginTask.auth.JwtTokenUtil;
-import com.example.LoginTask.models.JwtResponse;
+import com.example.LoginTask.models.JwtUserResponse;
 import com.example.LoginTask.models.User;
 import com.example.LoginTask.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,10 +37,14 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> loginUser(@RequestBody User user){
+    public ResponseEntity<JwtUserResponse> loginUser(@RequestBody User user){
         User validatedUser = userService.loginUser(user);
         String token = tokenUtil.generateToken(validatedUser);
-        JwtResponse response = JwtResponse.builder().name(validatedUser.getName()).jwtToken(token).build();
+        JwtUserResponse response = JwtUserResponse.builder()
+                .id(validatedUser.getId())
+                .name(validatedUser.getName())
+                .jwtToken(token)
+                .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @PostMapping("/register")
