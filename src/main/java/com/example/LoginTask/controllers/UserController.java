@@ -1,6 +1,7 @@
 package com.example.LoginTask.controllers;
 
 import com.example.LoginTask.auth.JwtTokenUtil;
+import com.example.LoginTask.models.ApiResponse;
 import com.example.LoginTask.models.JwtUserResponse;
 import com.example.LoginTask.models.User;
 import com.example.LoginTask.service.UserService;
@@ -27,29 +28,62 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public List<User> getAllUsers(){
-        return userService.getAllUsers();
+    public ResponseEntity<ApiResponse> getAllUsers(){
+        return buildOkResponse(userService.getAllUsers());
     }
 
     @GetMapping("/users/{id}")
-    public User getUser(@PathVariable("id") Integer id){
-        return userService.getUser(id);
+    public ResponseEntity<ApiResponse> getUser(@PathVariable("id") Integer id){
+        try{
+            return buildOkResponse(userService.getUser(id));
+        }catch (RuntimeException e){
+            return buildFailedResponse(e, HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtUserResponse> loginUser(@RequestBody User user){
-        User validatedUser = userService.loginUser(user);
+    public ResponseEntity<ApiResponse> loginUser(@RequestBody User user){
+        try{
+            User validatedUser = userService.loginUser(user);
+            JwtUserResponse response = getJwtUserResponse(validatedUser);
+            return buildOkResponse(response);
+        }catch (RuntimeException e){
+            return buildFailedResponse(e,HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    private JwtUserResponse getJwtUserResponse(User validatedUser) {
         String token = tokenUtil.generateToken(validatedUser);
         JwtUserResponse response = JwtUserResponse.builder()
                 .id(validatedUser.getId())
                 .name(validatedUser.getName())
                 .jwtToken(token)
                 .build();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response;
     }
+
     @PostMapping("/register")
-    public User registerUser(@RequestBody User user){
-        return userService.registerUser(user);
+    public ResponseEntity<ApiResponse> registerUser(@RequestBody User user){
+        try{
+            User userData = userService.registerUser(user);
+            JwtUserResponse response = getJwtUserResponse(userData);
+            return buildOkResponse(response);
+        }catch (RuntimeException e){
+            return buildFailedResponse(e,HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    private ResponseEntity<ApiResponse> buildFailedResponse(RuntimeException e, HttpStatus httpStatus) {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .status("FAIL")
+                .message(e.getMessage())
+                .build();
+        return new ResponseEntity<>(apiResponse, httpStatus);
+    }
+
+    private ResponseEntity<ApiResponse> buildOkResponse(Object response) {
+        ApiResponse apiResponse = ApiResponse.builder().data(response).status("OK").build();
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
 }
