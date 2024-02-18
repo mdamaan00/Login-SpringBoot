@@ -58,6 +58,10 @@ public class UserService {
         return userRepository.save(user);
     }
     public User getUser(Integer id){
-        return userRepository.getByUserId(id);
+        User user = userRepository.getByUserId(id);
+        if (user == null){
+            throw new RuntimeException("No user found with id %s".formatted(id));
+        }
+        return user;
     }
 }
